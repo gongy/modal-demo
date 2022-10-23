@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .centered {
+        text-align: center;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body onload="predict()">
+    <div class="centered">
+      <h2>Sentiment Analysis</h2>
+      <form>
+        <label for="phrase">Enter phrase to analyse:</label>
+        <input type="text" id="phrase" name="phrase"><br><br>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    <div class="centered" id="result" />
+    <script>
+      function predict () {
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+          get: (searchParams, prop) => searchParams.get(prop),
+        });
+        document.getElementById("phrase").value = params.phrase;
+        document.getElementById("phrase").focus();
+        document.getElementById("result").innerHTML = "Running sentiment model ...";
+        fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: params.phrase,
+        })
+          .then((res) => res.text())
+          .then((res) => document.getElementById("result").innerHTML = "Sentiment: " + res );
+      }
+    </script>
+  </body>
+</html>
+
